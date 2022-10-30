@@ -1,0 +1,75 @@
+#inicializando o pygame
+import pygame
+from pygame.locals import *
+from sys import exit
+import os
+
+diretorio_principal=os.path.dirname(__file__)
+diretorio_imagens=os.path.join(diretorio_principal,'imagens')
+
+
+Largura=640
+Altura=480
+
+Branco=(255,255,255)
+
+tela=pygame.display.set_mode((Largura,Altura))
+
+pygame.display.set_caption("jogo")
+
+sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
+
+class Vaqueiro(pygame.sprite.Sprite):
+  def __init__(self):
+    pygame.sprite.Sprite.__init__(self)
+    self.imagens_player=[]
+    for i in range(4):
+      img = sprite_sheet.subsurface((i*32,0),(32,32))
+      img=pygame.transform.scale(img,(32*4,32*4))
+      self.imagens_player.append(img)
+
+    self.index_lista=0
+    self.image=self.imagens_player[0]
+    self.rect=self.image.get_rect()
+    self.rect.center=(100,Altura-64)
+
+  def update(self):
+    if self.index_lista > 3 :
+      self.index_lista=0
+    self.index_lista +=0.25
+    self.image=self.imagens_player[int(self.index_lista)]
+
+class Chao(pygame.sprite.Sprite):
+  def __init__(self,pos_x):
+    pygame.sprite.Sprite.__init__(self)
+    self.image=sprite_sheet.subsurface((9*32,0),(32,32))
+    self.image=pygame.transform.scale(self.image,(32*2,32*2))
+    self.rect=self.image.get_rect()
+    self.rect.y=Altura-64
+    self.rect.x=pos_x *64
+
+  def update(self):
+    if self.rect.topright[0] < 0:
+      self.rect.x=Largura
+    self.rect.x -=10
+
+
+todas_as_sprites=pygame.sprite.Group()
+vaqueiro=Vaqueiro()
+todas_as_sprites.add(vaqueiro)
+for i in range(Largura*2//64):
+  chao=Chao(i)
+  todas_as_sprites.add(chao)
+
+relogio=pygame.time.Clock()
+while True:
+  relogio.tick(30)
+  tela.fill(Branco)
+  for event in pygame.event.get():
+   if event.type == QUIT:
+     pygame.quit()
+     exit()
+
+  todas_as_sprites.draw(tela)
+  todas_as_sprites.update()
+
