@@ -14,9 +14,11 @@ diretorio_imagens=os.path.join(diretorio_principal,'imagens')
 Largura=640
 Altura=480
 pontos = 0
+
 escolha_obstaculo = choice([0, 1])
 Branco=(255,255,255)
 Preto=(0,0,0)
+
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
     mensagem = f'{msg}'
@@ -26,14 +28,18 @@ def exibe_mensagem(msg, tamanho, cor):
 tela=pygame.display.set_mode((Largura,Altura))
 
 pygame.display.set_caption("jogo")
-
+#pegando imagem spritesheet
 sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
+
+
+imgfundo_dia=pygame.image.load('imagens/fundopixel_dia.jpg')
+imgfundo_noite=pygame.image.load('imagens/fundopixel_noite.jpg')
 
 class Urubu(pygame.sprite.Sprite):
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.imagens_player=[]
-    for i in range(4,8):  
+    for i in range(4,8):
       img = sprite_sheet.subsurface((i*32,0),(32,32))
       img=pygame.transform.scale(img,(32*4,32*4))
       self.imagens_player.append(img)
@@ -124,10 +130,10 @@ class Cacto(pygame.sprite.Sprite):
   def update(self):
     if self.rect.topright[0] < 0:
       self.rect.x = Largura
-    if pontos <= 500:
+    if pontos <= 50:
       self.rect.x -=10
     else:
-      self.rect.x -=35
+      self.rect.x -=20
 
 todas_as_sprites=pygame.sprite.Group()
 vaqueiro=Vaqueiro()
@@ -150,10 +156,14 @@ grupo_obstaculos.add(urubu)
 relogio=pygame.time.Clock()
 while True:
   relogio.tick(30)
-  if pontos <= 500:
-    tela.fill(Branco)
+  #trocando do dia pra noite
+  if pontos <= 50:
+    #tela.fill(Branco)
+    tela.blit(imgfundo_dia,(0,0))
   else:
-    tela.fill(Preto)
+    #tela.fill(Preto)
+    tela.blit(imgfundo_noite, (0, 0))
+
   for event in pygame.event.get():
     if event.type == QUIT:
       pygame.quit()
