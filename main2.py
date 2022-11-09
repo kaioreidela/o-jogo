@@ -1,8 +1,9 @@
-#inicializando o pygame
+# inicializando o pygame
 import pygame
 from pygame.locals import *
 from sys import exit
 import os
+from random import randrange, choice
 
 pygame.init()
 
@@ -12,14 +13,50 @@ diretorio_imagens=os.path.join(diretorio_principal,'imagens')
 
 Largura=640
 Altura=480
-
+pontos = 0
+escolha_obstaculo = choice([0, 1])
 Branco=(255,255,255)
+
+def exibe_mensagem(msg, tamanho, cor):
+    fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
+    mensagem = f'{msg}'
+    texto_formatado = fonte.render(mensagem, True, cor)
+    return texto_formatado
 
 tela=pygame.display.set_mode((Largura,Altura))
 
 pygame.display.set_caption("jogo")
 
 sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
+
+class Urubu(pygame.sprite.Sprite):
+  def __init__(self):
+    pygame.sprite.Sprite.__init__(self)
+    self.imagens_player=[]
+    for i in range(4,8):  
+      img = sprite_sheet.subsurface((i*32,0),(32,32))
+      img=pygame.transform.scale(img,(32*4,32*4))
+      self.imagens_player.append(img)
+
+    self.index_lista=0
+    self.image=self.imagens_player[0]
+    self.mask=pygame.mask.from_surface(self.image)
+    self.rect = self.image.get_rect()
+    self.escolha = escolha_obstaculo
+    self.rect.center=(50,50)
+
+
+  def update(self):
+    if self.escolha == 1:
+     if self.rect.topright[0] < 0:
+       self.rect.x = Largura
+       self.rect.x -= 10
+
+    if self.index_lista > 3:
+       self.index_lista = 0
+    self.index_lista += 0.25
+    self.image = self.imagens_player[int(self.index_lista)]
+
 
 class Vaqueiro(pygame.sprite.Sprite):
   def __init__(self):
@@ -71,6 +108,7 @@ class Chao(pygame.sprite.Sprite):
       self.rect.x=Largura
     self.rect.x -=10
 
+
 class Cacto(pygame.sprite.Sprite):
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
@@ -89,6 +127,9 @@ todas_as_sprites=pygame.sprite.Group()
 vaqueiro=Vaqueiro()
 todas_as_sprites.add(vaqueiro)
 
+urubu = Urubu()
+todas_as_sprites.add(urubu)
+
 for i in range(Largura*2//64):
   chao=Chao(i)
   todas_as_sprites.add(chao)
@@ -98,6 +139,7 @@ todas_as_sprites.add(cacto)
 
 grupo_obstaculos = pygame.sprite.Group()
 grupo_obstaculos.add(cacto)
+grupo_obstaculos.add(urubu)
 
 relogio=pygame.time.Clock()
 while True:
@@ -117,12 +159,22 @@ while True:
   colisoes=pygame.sprite.spritecollide(vaqueiro,grupo_obstaculos,False,pygame.sprite.collide_mask)
 
   todas_as_sprites.draw(tela)
+  if cacto.rect.topright[0] <= 0 or urubu.rect.topright[0] <= 0:
+    escolha_osbtaculo = choice([0,1])
+    cacto.rect.x = Largura
+    urubu.rect.x = Largura
+    cacto.escolha = escolha_obstaculo
+    urubu.escolha = escolha_obstaculo
+
   if colisoes:
     pass
   else:
-     todas_as_sprites.update()
+    pontos += 1
+    todas_as_sprites.update()
 
+  textos_pontos = exibe_mensagem(pontos, 40, (0,0,0))
 
+  tela.blit(textos_pontos, (520, 30))
 
 
   pygame.display.flip()
