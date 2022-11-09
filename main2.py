@@ -16,7 +16,7 @@ Altura=480
 pontos = 0
 escolha_obstaculo = choice([0, 1])
 Branco=(255,255,255)
-
+Preto=(0,0,0)
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
     mensagem = f'{msg}'
@@ -106,14 +106,17 @@ class Chao(pygame.sprite.Sprite):
   def update(self):
     if self.rect.topright[0] < 0:
       self.rect.x=Largura
-    self.rect.x -=10
+    if pontos <= 50:
+      self.rect.x -=10
+    else:
+      self.rect.x -=20
 
 
 class Cacto(pygame.sprite.Sprite):
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.image = sprite_sheet.subsurface((8* 32, 0), (32, 32))
-    self.image = pygame.transform.scale(self.image, (32 * 4, 32 * 4))
+    self.image = pygame.transform.scale(self.image, (32 * 5, 32 * 5))
     self.rect=self.image.get_rect()
     self.mask = pygame.mask.from_surface(self.image)
     self.rect.center=(Largura,Altura -45)
@@ -121,7 +124,10 @@ class Cacto(pygame.sprite.Sprite):
   def update(self):
     if self.rect.topright[0] < 0:
       self.rect.x = Largura
-    self.rect.x -= 10
+    if pontos <= 500:
+      self.rect.x -=10
+    else:
+      self.rect.x -=35
 
 todas_as_sprites=pygame.sprite.Group()
 vaqueiro=Vaqueiro()
@@ -144,7 +150,10 @@ grupo_obstaculos.add(urubu)
 relogio=pygame.time.Clock()
 while True:
   relogio.tick(30)
-  tela.fill(Branco)
+  if pontos <= 500:
+    tela.fill(Branco)
+  else:
+    tela.fill(Preto)
   for event in pygame.event.get():
     if event.type == QUIT:
       pygame.quit()
@@ -172,7 +181,7 @@ while True:
     pontos += 1
     todas_as_sprites.update()
 
-  textos_pontos = exibe_mensagem(pontos, 40, (0,0,0))
+  textos_pontos = exibe_mensagem(pontos, 40, (50,10,25))
 
   tela.blit(textos_pontos, (520, 30))
 
