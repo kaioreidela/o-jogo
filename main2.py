@@ -1,37 +1,40 @@
-# inicializando o pygame
+# importando bibliotecas necessarias
+
 import pygame
 from pygame.locals import *
 from sys import exit
 import os
 from random import randrange, choice
 
+# inicializando o pygame
 pygame.init()
 
+#criando diretorios
 diretorio_principal=os.path.dirname(__file__)
 diretorio_imagens=os.path.join(diretorio_principal,'imagens')
 
-
+#criando e definindo variaveis
 Largura=640
 Altura=480
 pontos = 0
-
-escolha_obstaculo = choice([0, 1])
 Branco=(255,255,255)
 Preto=(0,0,0)
+
+escolha_obstaculo = choice([0, 1])
 
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
     mensagem = f'{msg}'
     texto_formatado = fonte.render(mensagem, True, cor)
     return texto_formatado
-
+#criacao de tela
 tela=pygame.display.set_mode((Largura,Altura))
 
+#criacao do nome do jogo
 pygame.display.set_caption("jogo")
-#pegando imagem spritesheet
+
+#organizando e definindo imagens da spritesheet
 sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
-
-
 imgfundo_dia=pygame.image.load('imagens/fundopixel_dia.jpg')
 imgfundo_noite=pygame.image.load('imagens/fundopixel_noite.jpg')
 
@@ -63,16 +66,19 @@ class Urubu(pygame.sprite.Sprite):
     self.index_lista += 0.25
     self.image = self.imagens_player[int(self.index_lista)]
 
-
+#criacao da classe vaqueiro
 class Vaqueiro(pygame.sprite.Sprite):
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.imagens_player=[]
+
+    #definindo imagens quais imagens sao a do vaqueiro na spritesheet
     for i in range(4):
       img = sprite_sheet.subsurface((i*32,0),(32,32))
       img=pygame.transform.scale(img,(32*4,32*4))
       self.imagens_player.append(img)
 
+    #posicao inicial do vaqueiro e definicao de mascara pra colisao
     self.index_lista=0
     self.image=self.imagens_player[0]
     self.rect=self.image.get_rect()
@@ -83,18 +89,21 @@ class Vaqueiro(pygame.sprite.Sprite):
   def pular(self):
     self.pulo = True
 
-
+  #sistema de atualizacao do personagem vaqueiro com definicao de altura de pulo e velocidade da animacao
   def update(self):
+    #pulo e altura do pulo
     if self.pulo == True:
-        if self.rect.y <= 150:
+        if self.rect.y <= 170:
           self.pulo = False
         self.rect.y -= 18
+    # para quando o vaqueiro nao estiver pulando
     else:
+
       if self.rect.y < self.pos_y_inicial:
         self.rect.y += 18
       else:
         self.rect.y = self.pos_y_inicial
-
+    #velocidade de animacao
     if self.index_lista > 3 :
       self.index_lista=0
     self.index_lista +=0.25
@@ -197,4 +206,5 @@ while True:
 
 
   pygame.display.flip()
+
 
