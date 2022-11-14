@@ -1,26 +1,21 @@
-# importando bibliotecas necessarias
-
-import pygame
-from pygame.locals import *
-from sys import exit
-import os
-from random import randrange, choice
 
 # inicializando o pygame
 pygame.init()
-
+pygame.mixer.init()
 #criando diretorios
 diretorio_principal=os.path.dirname(__file__)
 diretorio_imagens=os.path.join(diretorio_principal,'imagens')
+diretorio_sons=os.path.join(diretorio_principal,'sons')
 
 #criando e definindo variaveis
-Largura=640
-Altura=480
+Largura=853
+Altura=599
 pontos = 0
 Branco=(255,255,255)
 Preto=(0,0,0)
 
 escolha_obstaculo = choice([0, 1])
+son_pulo=pygame.mixer.Sound(os.path.join(diretorio_sons,'som_morte.mpeg'))
 
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
@@ -37,6 +32,8 @@ pygame.display.set_caption("jogo")
 sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
 imgfundo_dia=pygame.image.load('imagens/fundopixel_dia.jpg')
 imgfundo_noite=pygame.image.load('imagens/fundopixel_noite.jpg')
+img_morte=pygame.image.load('imagens/youdiedz_resized.jpg')
+
 
 class Urubu(pygame.sprite.Sprite):
   def __init__(self):
@@ -93,7 +90,7 @@ class Vaqueiro(pygame.sprite.Sprite):
   def update(self):
     #pulo e altura do pulo
     if self.pulo == True:
-        if self.rect.y <= 170:
+        if self.rect.y <= 260:
           self.pulo = False
         self.rect.y -= 18
     # para quando o vaqueiro nao estiver pulando
@@ -121,7 +118,7 @@ class Chao(pygame.sprite.Sprite):
   def update(self):
     if self.rect.topright[0] < 0:
       self.rect.x=Largura
-    if pontos <= 50:
+    if pontos <= 500:
       self.rect.x -=10
     else:
       self.rect.x -=20
@@ -131,7 +128,7 @@ class Cacto(pygame.sprite.Sprite):
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.image = sprite_sheet.subsurface((8* 32, 0), (32, 32))
-    self.image = pygame.transform.scale(self.image, (32 * 5, 32 * 5))
+    self.image = pygame.transform.scale(self.image, (32 * 4, 32 * 4))
     self.rect=self.image.get_rect()
     self.mask = pygame.mask.from_surface(self.image)
     self.rect.center=(Largura,Altura -45)
@@ -139,7 +136,7 @@ class Cacto(pygame.sprite.Sprite):
   def update(self):
     if self.rect.topright[0] < 0:
       self.rect.x = Largura
-    if pontos <= 50:
+    if pontos <= 500:
       self.rect.x -=10
     else:
       self.rect.x -=20
@@ -166,7 +163,7 @@ relogio=pygame.time.Clock()
 while True:
   relogio.tick(30)
   #trocando do dia pra noite
-  if pontos <= 50:
+  if pontos <= 500:
     #tela.fill(Branco)
     tela.blit(imgfundo_dia,(0,0))
   else:
@@ -195,16 +192,18 @@ while True:
     urubu.escolha = escolha_obstaculo
 
   if colisoes:
+    tela.blit(img_morte, (0, 0))
+    son_pulo.play()
     pass
+
+
   else:
     pontos += 1
     todas_as_sprites.update()
 
   textos_pontos = exibe_mensagem(pontos, 40, (50,10,25))
 
-  tela.blit(textos_pontos, (520, 30))
+  tela.blit(textos_pontos, (780, 30))
 
 
   pygame.display.flip()
-
-
