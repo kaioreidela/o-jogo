@@ -1,8 +1,3 @@
-import pygame
-from pygame.locals import *
-from sys import exit
-import os
-from random import randrange, choice
 
 # inicializando o pygame
 pygame.init()
@@ -128,10 +123,12 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       exit()
+
     if event.type == KEYDOWN:
       if event.key == K_SPACE:
         if vaqueiro.rect.y != vaqueiro.pos_y_inicial:
-          pass
+           pass
+
         else:
           vaqueiro.pular()
 
