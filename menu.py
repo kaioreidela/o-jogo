@@ -44,7 +44,7 @@ class Vaqueiro(pygame.sprite.Sprite):
     self.index_lista=0
     self.image=self.imagens_player[0]
     self.rect=self.image.get_rect()
-    self.rect.center=(100, 100)
+    self.rect.center=(100, 120)
 
   def update(self):
     if self.index_lista > 3 :
@@ -52,9 +52,25 @@ class Vaqueiro(pygame.sprite.Sprite):
     self.index_lista +=0.25
     self.image=self.imagens_player[int(self.index_lista)]
 
+class Urubu(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.imagens_player = []
+        for i in range(4, 8):
+            img = sprite_sheet.subsurface((i * 32, 0), (32, 32))
+            img = pygame.transform.scale(img, (32 * 4, 32 * 4))
+            self.imagens_player.append(img)
 
+        self.index_lista = 0
+        self.image = self.imagens_player[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = (800, 120)
 
-
+    def update(self):
+        if self.index_lista > 3:
+            self.index_lista = 0
+        self.index_lista += 0.25
+        self.image = self.imagens_player[int(self.index_lista)]
 
 
 som=som_menu.play()
@@ -98,7 +114,7 @@ while True:
     esc = fontesys.render(sair, 1, Branco)
     selecionar = fontesys.render(enter, 1,Branco)
     direito = fontesys.render(direito, 1, Branco)
-    janela.blit(esc, (220, 380))
+    janela.blit(esc,(220, 380))
     janela.blit(selecionar, (590, 380))
     janela.blit(direito, (60,560))
 
@@ -135,6 +151,8 @@ while True:
     todas_as_sprites = pygame.sprite.Group()
     vaqueiro = Vaqueiro()
     todas_as_sprites.add(vaqueiro)
+    urubu = Urubu()
+    todas_as_sprites.add(urubu)
 
 
     #atualização da tela
