@@ -48,26 +48,33 @@ while True:
     opcoes = 'tutorial';
     pygame.font.init();
     fonte = pygame.font.get_default_font();
+
     #titulo
     fontesys = pygame.font.SysFont(fonte, 70);
     titulo = fontesys.render(menu, 1, Preto);
+
     #opções
     fontesys = pygame.font.SysFont(fonte, 50);
     opcao1 = fontesys.render(jogar, 1, Preto);
     opcao2 = fontesys.render(opcoes, 1, Preto);
+
     #iprimindo o titulo e as opções
     janela.blit(imgfundo, (0, 0))
     janela.blit(titulo, (150, 150));
     janela.blit(opcao1, (600, 220));
     janela.blit(opcao2, (600, 270));
+
     #roda pé
     fontesys = pygame.font.SysFont(fonte, 30);
     sair = '[ESC] - sair';
     enter = '[ENTER] - selecionar';
+    direito= '2022 ALL RIGHTS RESERVED DEVELOPMENT BY KAIOREIDELA & NNADSON12'
     esc = fontesys.render(sair, 1, Branco);
     selecionar = fontesys.render(enter, 1,Branco);
+    direito = fontesys.render(direito,1,Branco)
     janela.blit(esc, (220, 380));
     janela.blit(selecionar, (590, 380));
+    janela.blit(direito,(60,560))
 
     #seta
     comandos = pygame.key.get_pressed();
