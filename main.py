@@ -1,3 +1,10 @@
+# importando bibliotecas necessarias
+
+import pygame
+from pygame.locals import *
+from sys import exit
+import os
+from random import randrange, choice
 
 # inicializando o pygame
 pygame.init()
@@ -11,17 +18,32 @@ diretorio_sons=os.path.join(diretorio_principal,'sons')
 Largura=853
 Altura=599
 pontos = 0
+velocidade_jogo=10
 Branco=(255,255,255)
 Preto=(0,0,0)
-
+colidiu=False
 escolha_obstaculo = choice([0, 1])
-son_pulo=pygame.mixer.Sound(os.path.join(diretorio_sons,'som_morte.mpeg'))
+som_morte=pygame.mixer.Sound(os.path.join(diretorio_sons,'som_morte.mpeg'))
 
+#criando funcao pra exibir mensagem
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
     mensagem = f'{msg}'
     texto_formatado = fonte.render(mensagem, True, cor)
     return texto_formatado
+
+
+def reinicia_jogo():
+    global pontos,velocidade_jogo,colidiu,escolha_obstaculo
+    pontos=0
+    velocidade_jogo=10
+    colidiu=False
+    vaqueiro.rect.y= Altura - 96 - 96//2
+    vaqueiro.pulo=False
+    urubu.rect.x=Largura
+    cacto.rect.x=Largura
+    escolha_obstaculo = choice([0, 1])
+
 #criacao de tela
 tela=pygame.display.set_mode((Largura,Altura))
 
@@ -119,7 +141,8 @@ class Chao(pygame.sprite.Sprite):
     if self.rect.topright[0] < 0:
       self.rect.x=Largura
     if pontos <= 500:
-      self.rect.x -=10
+      self.rect.x -=velocidade_jogo
+
     else:
       self.rect.x -=20
 
@@ -137,7 +160,7 @@ class Cacto(pygame.sprite.Sprite):
     if self.rect.topright[0] < 0:
       self.rect.x = Largura
     if pontos <= 500:
-      self.rect.x -=10
+      self.rect.x -=velocidade_jogo
     else:
       self.rect.x -=20
 
@@ -159,6 +182,7 @@ grupo_obstaculos = pygame.sprite.Group()
 grupo_obstaculos.add(cacto)
 grupo_obstaculos.add(urubu)
 
+
 relogio=pygame.time.Clock()
 while True:
   relogio.tick(30)
@@ -175,15 +199,22 @@ while True:
       pygame.quit()
       exit()
     if event.type == KEYDOWN:
-      if event.key == K_SPACE:
+      #botao secreto
+      if event.key == K_a:
+        pontos += 500
+      if event.key == K_SPACE and colidiu == False:
         if vaqueiro.rect.y != vaqueiro.pos_y_inicial:
           pass
         else:
           vaqueiro.pular()
+      if event.key == K_f and colidiu == True:
+        reinicia_jogo()
+
 
   colisoes=pygame.sprite.spritecollide(vaqueiro,grupo_obstaculos,False,pygame.sprite.collide_mask)
 
   todas_as_sprites.draw(tela)
+
   if cacto.rect.topright[0] <= 0 or urubu.rect.topright[0] <= 0:
     escolha_osbtaculo = choice([0,1])
     cacto.rect.x = Largura
@@ -191,17 +222,31 @@ while True:
     cacto.escolha = escolha_obstaculo
     urubu.escolha = escolha_obstaculo
 
-  if colisoes:
+  if colisoes and colidiu == False:
+    som_morte.play()
+    colidiu = True
+
+  if colidiu:
+    if pontos % 100 ==0:
+      pontos+=1
     tela.blit(img_morte, (0, 0))
-    son_pulo.play()
-    pass
+
+    restart=exibe_mensagem('press f to restart',50, Branco)
+    tela.blit(restart,(Largura//2,Altura//2 +60))
 
 
   else:
     pontos += 1
     todas_as_sprites.update()
+    textos_pontos = exibe_mensagem(pontos, 40, (50, 10, 25))
 
-  textos_pontos = exibe_mensagem(pontos, 40, (50,10,25))
+  if pontos % 100 == 0 :
+    if velocidade_jogo == 11:
+      velocidade_jogo +=0
+    else:
+     velocidade_jogo += 10
+
+
 
   tela.blit(textos_pontos, (780, 30))
 
