@@ -7,6 +7,6 @@
 ### desenvolvimento:kaio e nadson 
 ## Ajudas e menções 
 ### curso de pygame do youtube:João tinti.
-### ajuda no menu:Smith.
+### ajuda no menu:Smith e igor.
 ### ajuda com desenvolvimento e identação do código: valdemiro e Gabriel.
 ### musicas: Yuka Kitamura - DARK SOULS III(main theme),Motoi Sakuraba - firelink shrine
