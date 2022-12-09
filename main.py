@@ -1,198 +1,25 @@
-# importando bibliotecas necessarias
 
 import pygame
 from pygame.locals import *
 from sys import exit
 import os
-from random import randrange, choice
+from random import randrange , choice
+import variaveis
+
 
 # inicializando o pygame
 pygame.init()
 pygame.mixer.init()
-#criando diretorios
-diretorio_principal=os.path.dirname(__file__)
-diretorio_imagens=os.path.join(diretorio_principal,'imagens')
-diretorio_sons=os.path.join(diretorio_principal,'sons')
 
-#criando e definindo variaveis
-Largura=853
-Altura=599
-pontos = 0
-velocidade_jogo=10
-Branco=(255,255,255)
-Preto=(0,0,0)
-colidiu=False
-escolha_obstaculo = choice([0, 1])
-som_morte=pygame.mixer.Sound(os.path.join(diretorio_sons,'som_morte.mpeg'))
-
-#criando funcao pra exibir mensagem
-def exibe_mensagem(msg, tamanho, cor):
-    fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
-    mensagem = f'{msg}'
-    texto_formatado = fonte.render(mensagem, True, cor)
-    return texto_formatado
-
-
-def reinicia_jogo():
-    global pontos,velocidade_jogo,colidiu,escolha_obstaculo
-    pontos=0
-    velocidade_jogo=10
-    colidiu=False
-    vaqueiro.rect.y= Altura - 96 - 96//2
-    vaqueiro.pulo=False
-    urubu.rect.x=Largura
-    cacto.rect.x=Largura
-    escolha_obstaculo = choice([0, 1])
-
-#criacao de tela
-tela=pygame.display.set_mode((Largura,Altura))
-
-#criacao do nome do jogo
-pygame.display.set_caption("jogo")
-
-#organizando e definindo imagens da spritesheet
-sprite_sheet=pygame.image.load(os.path.join(diretorio_imagens,'spritesjogo111.png')).convert_alpha()
-imgfundo_dia=pygame.image.load('imagens/fundopixel_dia.jpg')
-imgfundo_noite=pygame.image.load('imagens/fundopixel_noite.jpg')
-img_morte=pygame.image.load('imagens/youdiedz_resized.jpg')
-
-
-class Urubu(pygame.sprite.Sprite):
-  def __init__(self):
-    pygame.sprite.Sprite.__init__(self)
-    self.imagens_player=[]
-    for i in range(4,8):
-      img = sprite_sheet.subsurface((i*32,0),(32,32))
-      img=pygame.transform.scale(img,(32*4,32*4))
-      self.imagens_player.append(img)
-
-    self.index_lista=0
-    self.image=self.imagens_player[0]
-    self.mask=pygame.mask.from_surface(self.image)
-    self.rect = self.image.get_rect()
-    self.escolha = escolha_obstaculo
-    self.rect.center=(50,50)
-
-
-  def update(self):
-    if self.escolha == 1:
-     if self.rect.topright[0] < 0:
-       self.rect.x = Largura
-       self.rect.x -= 10
-
-    if self.index_lista > 3:
-       self.index_lista = 0
-    self.index_lista += 0.25
-    self.image = self.imagens_player[int(self.index_lista)]
-
-#criacao da classe vaqueiro
-class Vaqueiro(pygame.sprite.Sprite):
-  def __init__(self):
-    pygame.sprite.Sprite.__init__(self)
-    self.imagens_player=[]
-
-    #definindo imagens quais imagens sao a do vaqueiro na spritesheet
-    for i in range(4):
-      img = sprite_sheet.subsurface((i*32,0),(32,32))
-      img=pygame.transform.scale(img,(32*4,32*4))
-      self.imagens_player.append(img)
-
-    #posicao inicial do vaqueiro e definicao de mascara pra colisao
-    self.index_lista=0
-    self.image=self.imagens_player[0]
-    self.rect=self.image.get_rect()
-    self.mask=pygame.mask.from_surface(self.image)
-    self.pos_y_inicial = Altura - 96 - 96//2
-    self.rect.center=(100,Altura-96)
-    self.pulo = False
-  def pular(self):
-    self.pulo = True
-
-  #sistema de atualizacao do personagem vaqueiro com definicao de altura de pulo e velocidade da animacao
-  def update(self):
-    #pulo e altura do pulo
-    if self.pulo == True:
-        if self.rect.y <= 260:
-          self.pulo = False
-        self.rect.y -= 18
-    # para quando o vaqueiro nao estiver pulando
-    else:
-
-      if self.rect.y < self.pos_y_inicial:
-        self.rect.y += 18
-      else:
-        self.rect.y = self.pos_y_inicial
-    #velocidade de animacao
-    if self.index_lista > 3 :
-      self.index_lista=0
-    self.index_lista +=0.25
-    self.image=self.imagens_player[int(self.index_lista)]
-
-class Chao(pygame.sprite.Sprite):
-  def __init__(self,pos_x):
-    pygame.sprite.Sprite.__init__(self)
-    self.image=sprite_sheet.subsurface((9*32,0),(32,32))
-    self.image=pygame.transform.scale(self.image,(32*4,32*4))
-    self.rect=self.image.get_rect()
-    self.rect.y=Altura-128
-    self.rect.x=pos_x *128
-
-  def update(self):
-    if self.rect.topright[0] < 0:
-      self.rect.x=Largura
-    if pontos <= 500:
-      self.rect.x -=velocidade_jogo
-
-    else:
-      self.rect.x -=20
-
-
-class Cacto(pygame.sprite.Sprite):
-  def __init__(self):
-    pygame.sprite.Sprite.__init__(self)
-    self.image = sprite_sheet.subsurface((8* 32, 0), (32, 32))
-    self.image = pygame.transform.scale(self.image, (32 * 4, 32 * 4))
-    self.rect=self.image.get_rect()
-    self.mask = pygame.mask.from_surface(self.image)
-    self.rect.center=(Largura,Altura -45)
-
-  def update(self):
-    if self.rect.topright[0] < 0:
-      self.rect.x = Largura
-    if pontos <= 500:
-      self.rect.x -=velocidade_jogo
-    else:
-      self.rect.x -=20
-
-todas_as_sprites=pygame.sprite.Group()
-vaqueiro=Vaqueiro()
-todas_as_sprites.add(vaqueiro)
-
-urubu = Urubu()
-todas_as_sprites.add(urubu)
-
-for i in range(Largura*2//64):
-  chao=Chao(i)
-  todas_as_sprites.add(chao)
-
-cacto=Cacto()
-todas_as_sprites.add(cacto)
-
-grupo_obstaculos = pygame.sprite.Group()
-grupo_obstaculos.add(cacto)
-grupo_obstaculos.add(urubu)
-
-
-relogio=pygame.time.Clock()
 while True:
-  relogio.tick(30)
+  variaveis.relogio.tick(30)
   #trocando do dia pra noite
-  if pontos <= 500:
+  if variaveis.pontos <= 500:
     #tela.fill(Branco)
-    tela.blit(imgfundo_dia,(0,0))
+    variaveis.tela.blit(variaveis.imgfundo_dia,(0,0))
   else:
     #tela.fill(Preto)
-    tela.blit(imgfundo_noite, (0, 0))
+    variaveis.tela.blit(variaveis.imgfundo_noite, (0, 0))
 
   for event in pygame.event.get():
     if event.type == QUIT:
@@ -201,54 +28,54 @@ while True:
     if event.type == KEYDOWN:
       #botao secreto
       if event.key == K_a:
-        pontos += 500
-      if event.key == K_SPACE and colidiu == False:
-        if vaqueiro.rect.y != vaqueiro.pos_y_inicial:
+        variaveis.pontos += 500
+      if event.key == K_SPACE and variaveis.colidiu == False:
+        if variaveis.vaqueiro.rect.y != variaveis.vaqueiro.pos_y_inicial:
           pass
         else:
-          vaqueiro.pular()
-      if event.key == K_f and colidiu == True:
-        reinicia_jogo()
+          variaveis.vaqueiro.pular()
+      if event.key == K_f and variaveis.colidiu == True:
+        variaveis.reinicia_jogo()
 
 
-  colisoes=pygame.sprite.spritecollide(vaqueiro,grupo_obstaculos,False,pygame.sprite.collide_mask)
+  colisoes=pygame.sprite.spritecollide(variaveis.vaqueiro,variaveis.grupo_obstaculos,False,pygame.sprite.collide_mask)
 
-  todas_as_sprites.draw(tela)
+  variaveis.todas_as_sprites.draw(variaveis.tela)
 
-  if cacto.rect.topright[0] <= 0 or urubu.rect.topright[0] <= 0:
+  if variaveis.cacto.rect.topright[0] <= 0 or variaveis.urubu.rect.topright[0] <= 0:
     escolha_osbtaculo = choice([0,1])
-    cacto.rect.x = Largura
-    urubu.rect.x = Largura
-    cacto.escolha = escolha_obstaculo
-    urubu.escolha = escolha_obstaculo
+    variaveis.cacto.rect.x = variaveis.Largura
+    variaveis.urubu.rect.x = variaveis.Largura
+    variaveis.cacto.escolha = variaveis.escolha_obstaculo
+    variaveis.urubu.escolha = variaveis.escolha_obstaculo
 
-  if colisoes and colidiu == False:
-    som_morte.play()
-    colidiu = True
+  if colisoes and variaveis.colidiu == False:
+    variaveis.som_morte.play()
+    variaveis.colidiu = True
 
-  if colidiu:
-    if pontos % 100 ==0:
-      pontos+=1
-    tela.blit(img_morte, (0, 0))
+  if variaveis.colidiu:
+    if variaveis.pontos % 100 ==0:
+      variaveis.pontos+=1
+    variaveis.tela.blit(variaveis.img_morte, (0, 0))
 
-    restart=exibe_mensagem('press f to restart',50, Branco)
-    tela.blit(restart,(Largura//2,Altura//2 +60))
+    restart=variaveis.exibe_mensagem('press f to restart',50, variaveis.Branco)
+    variaveis.tela.blit(restart,(variaveis.Largura//2,variaveis.Altura//2 +60))
 
 
   else:
-    pontos += 1
-    todas_as_sprites.update()
-    textos_pontos = exibe_mensagem(pontos, 40, (50, 10, 25))
+    variaveis.pontos += 1
+    variaveis.todas_as_sprites.update()
+    textos_pontos = variaveis.exibe_mensagem(variaveis.pontos, 40, (50, 10, 25))
 
-  if pontos % 100 == 0 :
-    if velocidade_jogo == 11:
-      velocidade_jogo +=0
+  if variaveis.pontos % 100 == 0 :
+    if variaveis.velocidade_jogo == 11:
+      variaveis.velocidade_jogo +=0
     else:
-     velocidade_jogo += 10
+     variaveis.velocidade_jogo += 10
 
 
 
-  tela.blit(textos_pontos, (780, 30))
+  variaveis.tela.blit(textos_pontos, (780, 30))
 
 
   pygame.display.flip()
