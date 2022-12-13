@@ -6,6 +6,8 @@ from sys import exit
 import os
 from random import randrange , choice
 
+
+
 # inicializando o pygame
 pygame.init()
 pygame.mixer.init()
@@ -34,6 +36,11 @@ def exibe_mensagem(msg, tamanho, cor):
     mensagem = f'{msg}'
     texto_formatado = fonte.render(mensagem, True, cor)
     return texto_formatado
+
+
+textos_pontos = exibe_mensagem(pontos, 40, (50, 10, 25))
+restart = exibe_mensagem('press f to restart', 50, Branco)
+
 
 
 def reinicia_jogo():
@@ -187,3 +194,4 @@ grupo_obstaculos.add(urubu)
 
 
 relogio=pygame.time.Clock()
+
