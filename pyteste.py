@@ -3,6 +3,7 @@ import pygame
 import variaveis
 
 pontos = 0
+Branco =(0,0,0)
 
 def exibe_mensagem(msg, tamanho, cor):
     fonte = pygame.font.SysFont('comincsansms', tamanho, True, False)
@@ -12,13 +13,13 @@ def exibe_mensagem(msg, tamanho, cor):
 
 
 def test_exibe_mensagem_pontos():
-    textos_pontos = exibe_mensagem(pontos, 40, (50, 10, 25))
-    assert exibe_mensagem(pontos, 40, (50, 10, 25))  ==  textos_pontos
+    if exibe_mensagem(pontos, 40, (50, 10, 25)) == True:
+       assert  exibe_mensagem(pontos, 40, (50, 10, 25)) == variaveis.textos_pontos
 
 
 def test_exibe_mensagem_restart():
-    restart = variaveis.exibe_mensagem('press f to restart', 50, variaveis.Branco)
-    assert variaveis.exibe_mensagem('press f to restart', 50, variaveis.Branco) == restart
+    if exibe_mensagem('press f to restart', 50, Branco) == True:
+       assert exibe_mensagem('press f to restart', 50, Branco) == variaveis.restart
 
 def test_exibe_mensagem_tutorial():
     textos_tutorial= variaveis.exibe_mensagem("para pular aperte a tecla 'SPACE' ", 40, (50, 10, 25))
